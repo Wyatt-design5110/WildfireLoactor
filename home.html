@@ -14,26 +14,56 @@
     crossorigin=""></script>
 
     <style>
-        #map { height: 100%; }
+        #map { height: 100vh; }
+        #locate-btn {
+            position: absolute;
+            bottom: 10px;  /* Moved to the bottom */
+            left: 10px;
+            background: white;
+            border: 1px solid black;
+            padding: 5px 10px;
+            font-size: 14px;
+            cursor: pointer;
+            z-index: 1000;
+        }
     </style>
    
 </head>
 <body>
 
-<div id="map">
-    <script>
+<button id="locate-btn">Locate Me</button>
+<div id="map"></div>
 
-        // set the beginning location for the map
-        var map = L.map('map').setView([38, -98], 4);   // [latitude, longitude], zoomFactor
+<script>
 
-        // add OpenStreetMap layer
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        }).addTo(map);
+    // set the beginning location for the map
+    var map = L.map('map').setView([38, -98], 4);   // [latitude, longitude], zoomFactor
 
-    </script>
-</div>
+    // add OpenStreetMap layer
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    // Function to get user location
+    document.getElementById('locate-btn').addEventListener('click', function() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                var lat = position.coords.latitude;
+                var lon = position.coords.longitude;
+                map.setView([lat, lon], 13);
+                L.marker([lat, lon]).addTo(map)
+                    .bindPopup("You are here")
+                    .openPopup();
+            }, function(error) {
+                alert("Error getting location: " + error.message);
+            });
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    });
+
+</script>
 
 </body>
 </html>
